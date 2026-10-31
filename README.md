@@ -1,16 +1,46 @@
-# React + Vite
+# KRISHNAKUMAR P — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> Java Full Stack Developer | React · Java · MySQL · Git
 
-Currently, two official plugins are available:
+**Live site:** https://YOUR-SITE-URL/ *(replace after deployment)*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, Vite, Tailwind CSS 4 |
+| Animations | Framer Motion, AOS |
+| Contact form | EmailJS |
+| Cursor effect | WebGL (SplashCursor) |
 
-## Expanding the Oxlint configuration
+## Run Locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start dev server
+npm run dev
+
+# 3. Build for production
+npm run build
+```
+
+## Environment Variables
+
+Create a `.env.local` file in the project root with the following keys
+(get them from [emailjs.com](https://www.emailjs.com/)):
+
+```
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+> If not configured, the contact form falls back to opening your native email client.
+
+---
+
+Built during the placement training program at [TAP Academy](https://thetapacademy.com/) (full-stack development, AI and augmented reality training).
