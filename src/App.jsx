@@ -1,14 +1,14 @@
 // App.jsx — Root component. Sections rendered in order.
-// Internships & Leadership skipped — data arrays currently empty (add to portfolioData.js to enable).
-// Contact will be added in the next step.
 import SplashCursor from './components/SplashCursor';
 import Preloader from './components/Preloader';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
+import VideoIntro from './components/VideoIntro';
 import TechnicalSkills from './components/TechnicalSkills';
 import Services from './components/Services';
 import Projects from './components/Projects';
+import Internships from './components/Internships';
 import SoftSkills from './components/SoftSkills';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -21,9 +21,11 @@ function App() {
       <Navbar />
       <Hero />
       <About />
+      <VideoIntro />
       <TechnicalSkills />
       <Services />
       <Projects />
+      <Internships />
       <SoftSkills />
       <Contact />
       <Footer />
@@ -32,4 +34,3 @@ function App() {
 }
 
 export default App;
-

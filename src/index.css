@@ -14,6 +14,26 @@
   }
 }
 
+@keyframes marquee-single {
+  0% {
+    transform: translateX(100vw);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee-single {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee-single 15s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-single:hover {
+  animation-play-state: paused;
+}
+
 html {
   scroll-behavior: smooth;
 }

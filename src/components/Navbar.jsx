@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 import { personalInfo } from '../data/portfolioData';
 
-const navLinks = ['Home', 'About', 'Skills', 'Projects', 'Contact'];
+const navLinks = ['Home', 'About', 'Skills', 'Projects', 'Experience', 'Contact'];
 
 const hireMeMailto = `mailto:${personalInfo.emails.primary}?subject=Hiring Inquiry – Portfolio&body=Hello ${personalInfo.name},%0D%0A%0D%0AI came across your portfolio and would like to discuss an opportunity with you.%0D%0A%0D%0ALooking forward to hearing from you.%0D%0ABest Regards,`;
 
-export default function Navbar() {
+export default function Navbar({ hide = false }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -26,7 +26,9 @@ export default function Navbar() {
 
     return (
         <nav
-            className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${navBg}`}
+            className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-in-out ${navBg} ${
+                hide ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+            }`}
         >
             {/* ── Inner wrapper ── */}
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">

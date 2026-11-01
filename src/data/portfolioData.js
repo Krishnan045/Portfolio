@@ -30,12 +30,11 @@ export const academy = {
 export const socialLinks = {
     github: "https://github.com/Krishnan045",
     linkedin: "https://www.linkedin.com/in/krishnakumar-p-955726359/",
-    instagram: "", // not provided — leave blank or add later
 };
 
 // ─── Hero Section ──────────────────────────────────────────────────────────────
 export const heroContent = {
-    greeting: "Hi, I'm KRISHNAKUMAR P",
+    greeting: "Hi, I'm KRISHNA",
     titleHighlight: "Java Full Stack Developer",
     subtitle:
         "I build full-stack web apps with Java & React — creating clean, efficient, and user-friendly digital experiences.",
@@ -57,6 +56,13 @@ export const aboutContent = {
   turning real-world problems into working digital solutions.
   I'm currently sharpening my skills through the placement training program at TAP Academy.`,
     techStack: ["Java", "React.js", "JavaScript", "MySQL"],
+};
+
+// ─── Video Introduction Section (Image 3) ────────────────────────────────────
+export const videoIntro = {
+    badge: "Video Introduction",
+    heading: "MEET ME IN PERSON",
+    subtitle: "A quick hello: who I am, what I teach and what I build.",
 };
 
 // ─── Skills / Process Section ──────────────────────────────────────────────────
@@ -127,9 +133,56 @@ export const technicalSkills = {
 // Empty for now — fill in when ready.
 export const leadershipList = [];
 
-// ─── Internships / Experience ──────────────────────────────────────────────────
-// Empty for now — fill in when ready.
-export const internshipsList = [];
+// ─── Internships / Experience (Image 2) ────────────────────────────────────────
+export const internshipsList = [
+    {
+        duration: "JUN 2026 – PRESENT",
+        badge: "INTERNSHIP",
+        role: "Full Stack Developer Intern",
+        organization: "TAP ACADEMY",
+        skillsHeading: "SKILLS GAINED:",
+        skills: [
+            "Java Full Stack Development",
+            "Backend Development",
+            "Database Management",
+            "REST API Development",
+            "MVC Architecture",
+        ],
+        techHeading: "TECHNOLOGIES:",
+        tech: [
+            "Java",
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "JDBC",
+            "JSP",
+            "MySQL",
+            "Spring Boot",
+        ],
+    },
+    {
+        duration: "JUL 2025 – AUG 2025",
+        badge: "INTERNSHIP",
+        role: "Full Stack Developer Intern",
+        organization: "SKIEZ TECHNOLOGIES",
+        skillsHeading: "SKILLS GAINED:",
+        skills: [
+            "Responsive Web Development",
+            "UI/UX Design",
+            "Frontend Development",
+            "Database Management",
+            "Java Programming",
+        ],
+        techHeading: "TECHNOLOGIES:",
+        tech: [
+            "HTML",
+            "CSS",
+            "Figma",
+            "MySQL",
+            "Java",
+        ],
+    },
+];
 
 // ─── Soft Skills ───────────────────────────────────────────────────────────────
 export const softSkillsList = [
@@ -156,8 +209,53 @@ export const softSkillsList = [
 ];
 
 // ─── Projects ──────────────────────────────────────────────────────────────────
-// Empty for now — add projects when ready.
-export const projects = [];
+export const projects = [
+    {
+        id: "fashion",
+        number: "01",
+        badge: "FULL-STACK PROJECT",
+        badgeEmoji: "🛍️",
+        title: "Fashion – E-Commerce Web Application",
+        description:
+            "Developed a full-stack e-commerce platform that lets users browse fashion products, view details, add items to cart, place orders and track purchases.",
+        techTags: ["Java", "JSP", "JDBC", "MySQL", "HTML", "CSS", "JavaScript"],
+        accent: "red",
+        links: {
+            live: "https://github.com/Krishnan045/Fashion-Ecommerce",
+            github: "https://github.com/Krishnan045/Fashion-Ecommerce",
+        },
+    },
+    {
+        id: "zingbites",
+        number: "02",
+        badge: "FULL-STACK PROJECT",
+        badgeEmoji: "🍴",
+        title: "Zing Bites – Online Food Ordering Platform",
+        description:
+            "Developed a full-stack food ordering web application that lets users discover restaurants, browse menus, add items to cart, place orders and track deliveries, similar to Swiggy and Zomato.",
+        techTags: ["Java", "JSP", "JDBC", "MySQL", "HTML", "CSS", "JavaScript"],
+        accent: "amber",
+        links: {
+            live: "https://github.com/Krishnan045/ZingBites-FoodOrdering",
+            github: "https://github.com/Krishnan045/ZingBites-FoodOrdering",
+        },
+    },
+    {
+        id: "matrix",
+        number: "03",
+        badge: "WEB APPLICATION",
+        badgeEmoji: "⚡",
+        title: "Matrix_Generator – Table Computation Tool",
+        description:
+            "Developed an interactive mathematical matrix table computation tool featuring custom multiplier calculations, 3D invoice-style view, and dynamic digital rain canvas animations.",
+        techTags: ["HTML", "CSS", "JavaScript"],
+        accent: "emerald",
+        links: {
+            live: "https://matrix-generator.onrender.com/",
+            github: "https://github.com/Krishnan045/Matrix-generator",
+        },
+    },
+];
 
 // ─── Certificates (optional bonus component) ──────────────────────────────────
 export const certificates = {

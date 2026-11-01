@@ -1,8 +1,8 @@
-// Hero.jsx — Full-screen landing section with portrait background and play control
-import { useRef, useEffect, useState } from 'react';
+// Hero.jsx — Full-screen landing section with pure video hero, 5.5s corner transition, and auto-return
+import { useRef, useEffect, useState, useCallback } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import heroPoster from '../assets/about/profile.png';
+import heroVideo from '../assets/hero/hero.mp4';
 import { heroContent, socialLinks } from '../data/portfolioData';
 
 // ── Social icon paths ─────────────────────────────────────────────────────────
@@ -24,20 +24,13 @@ const SocialBar = ({ className = '' }) => (
                 </svg>
             </a>
         )}
-        {socialLinks.instagram && (
-            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram profile"
-                className="text-white/60 hover:text-white hover:scale-125 transition-all duration-200">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
-                </svg>
-            </a>
-        )}
     </div>
 );
 
 export default function Hero() {
     const videoRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isCornerOccupied, setIsCornerOccupied] = useState(false);
 
     // Initialise AOS once and refresh after full page load
     useEffect(() => {
@@ -47,34 +40,141 @@ export default function Hero() {
         return () => window.removeEventListener('load', refresh);
     }, []);
 
-    // Toggle video play / pause (silent fail when no source is loaded)
-    const toggleVideo = (e) => {
-        e.stopPropagation();
-        const video = videoRef.current;
-        if (!video) return;
+    // Video completed: resets state, sets time to 0, and returns cleanly within 2 seconds
+    const handleEnded = useCallback(() => {
+        setIsPlaying(false);
+        // Display completed screen briefly (1s) and return to full screen within 2 seconds with Play Reel button ready
+        setTimeout(() => {
+            setIsCornerOccupied(false);
+            if (videoRef.current) {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0;
+            }
+        }, 1000);
+    }, []);
+
+    // High-precision frame loop so the 5.5s minimization triggers at the exact millisecond with zero jitter
+    useEffect(() => {
+        let animId;
+        const checkFrame = () => {
+            if (videoRef.current && !videoRef.current.paused) {
+                const currentTime = videoRef.current.currentTime;
+                const duration = videoRef.current.duration;
+
+                if (duration && currentTime >= duration - 0.15) {
+                    handleEnded();
+                    return;
+                }
+
+                if (currentTime >= 5.5 && !isCornerOccupied) {
+                    setIsCornerOccupied(true);
+                } else if (currentTime < 5.5 && isCornerOccupied) {
+                    setIsCornerOccupied(false);
+                }
+            }
+            if (isPlaying) {
+                animId = requestAnimationFrame(checkFrame);
+            }
+        };
+
         if (isPlaying) {
-            video.pause();
-            setIsPlaying(false);
-        } else {
-            video.play().then(() => setIsPlaying(true)).catch(() => { });
+            animId = requestAnimationFrame(checkFrame);
+        }
+
+        return () => {
+            if (animId) cancelAnimationFrame(animId);
+        };
+    }, [isPlaying, isCornerOccupied, handleEnded]);
+
+    // Fallback monitor for timeupdate event
+    const handleTimeUpdate = () => {
+        if (videoRef.current) {
+            const { currentTime, duration } = videoRef.current;
+            if (duration && currentTime >= duration - 0.15) {
+                handleEnded();
+                return;
+            }
+            if (currentTime >= 5.5 && !isCornerOccupied) {
+                setIsCornerOccupied(true);
+            } else if (currentTime < 5.5 && isCornerOccupied) {
+                setIsCornerOccupied(false);
+            }
         }
     };
 
+    const handlePlay = () => {
+        setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+        setIsPlaying(false);
+    };
+
+    // Reset video and return to initial homepage state immediately
+    const resetVideo = useCallback((e) => {
+        e?.stopPropagation();
+        handleEnded();
+    }, [handleEnded]);
+
+    // Toggle video play / pause
+    const toggleVideo = (e) => {
+        e?.stopPropagation();
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (isPlaying) {
+            video.pause();
+        } else {
+            video.play()
+                .catch((err) => {
+                    console.warn('Playback error, retrying muted:', err);
+                    video.muted = true;
+                    video.play().catch((e) => console.error('Video play failed:', e));
+                });
+        }
+    };
+
+    // Support closing video with Escape key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && isPlaying) {
+                resetVideo();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isPlaying, resetVideo]);
+
     return (
-        <section id="home" className="relative w-full h-screen overflow-hidden bg-[#ff2a2a]">
+        <section
+            id="home"
+            className="relative w-full h-screen overflow-hidden bg-[#ff2a2a]"
+        >
+            {/* ── Video Player Container (Pure video hero — full screen initially, seamlessly transitions without box type after 5.5s) ── */}
+            <div
+                style={{ willChange: 'top, left, bottom, right' }}
+                className={`absolute z-10 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    isCornerOccupied
+                        ? 'top-[48%] md:top-0 bottom-0 left-0 md:left-[48%] right-0 md:[mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_100%)]'
+                        : 'top-0 bottom-0 left-0 right-0'
+                }`}
+            >
+                <video
+                    ref={videoRef}
+                    src={heroVideo}
+                    className="w-full h-full object-cover object-center md:object-[60%_center] cursor-pointer"
+                    playsInline
+                    preload="auto"
+                    onClick={toggleVideo}
+                    onPlay={handlePlay}
+                    onPause={handlePause}
+                    onEnded={handleEnded}
+                    onTimeUpdate={handleTimeUpdate}
+                />
+            </div>
 
-            {/* ── Background video / poster image ── */}
-            {/* Drop hero.mp4 into src/assets/hero/ to enable video playback */}
-            <video
-                ref={videoRef}
-                className="absolute inset-0 w-full h-full object-contain object-top md:object-right z-0"
-                playsInline
-                poster={heroPoster}
-                onEnded={() => setIsPlaying(false)}
-            />
-
-            {/* ── Readability gradient overlay ── */}
-            <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
+            {/* ── Readability gradient overlay (Ensures left-side text is always crisp and readable) ── */}
+            <div className="absolute inset-0 z-[15] pointer-events-none bg-gradient-to-r from-black/55 via-black/15 to-transparent" />
 
             {/* ── Left floating social bar (desktop only) ── */}
             <div className="hidden lg:flex fixed left-6 top-1/2 -translate-y-1/2 z-50 flex-col gap-4 mix-blend-difference">
@@ -94,22 +194,14 @@ export default function Hero() {
                         </svg>
                     </a>
                 )}
-                {socialLinks.instagram && (
-                    <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram profile"
-                        className="text-white/60 hover:text-white hover:scale-125 transition-all duration-200">
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
-                        </svg>
-                    </a>
-                )}
             </div>
 
-            {/* ── Content container ── */}
-            <div className="absolute inset-0 z-20 max-w-7xl mx-auto px-6 md:px-12 pb-20 md:pb-[8%] flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end">
-
-                {/* ── Left block ── */}
-                <div className="max-w-2xl flex flex-col gap-5">
-
+            {/* ── Content container (Text, CTAs, Play Reel button) ── */}
+            <div
+                className="absolute inset-0 z-20 max-w-7xl mx-auto px-6 md:px-12 pb-20 md:pb-[8%] flex flex-col md:flex-row justify-end md:justify-between items-start md:items-end pointer-events-none"
+            >
+                {/* ── Left block (interactive) ── */}
+                <div className="max-w-2xl flex flex-col gap-5 pointer-events-auto">
                     {/* Mobile social icons */}
                     <div data-aos="fade-up">
                         <SocialBar className="lg:hidden mb-2" />
@@ -157,14 +249,13 @@ export default function Hero() {
                             {heroContent.ctaSecondary.text}
                         </a>
 
-                        {/* Resume — only shown if ctaResume is not null */}
+                        {/* Resume */}
                         {heroContent.ctaResume && heroContent.ctaResume.href && (
                             <a
                                 href={heroContent.ctaResume.href}
-                                download
+                                download="KRISHNAKUMAR_P_Resume.pdf"
                                 className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/50 text-white font-semibold transition-all duration-200 hover:bg-white/10"
                             >
-                                {/* Download icon */}
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
                                 </svg>
@@ -174,17 +265,17 @@ export default function Hero() {
                     </div>
                 </div>
 
-                {/* ── Right block — Play Reel control ── */}
+                {/* ── Right block — Play Reel control (interactive) ── */}
                 <div
-                    className="flex flex-col items-center gap-2 mt-8 md:mt-0"
-                    data-aos="zoom-in"
-                    data-aos-delay="600"
+                    className={`flex flex-col items-center gap-2 mt-8 md:mt-0 pointer-events-auto transition-all duration-500 ease-out ${
+                        isPlaying && isCornerOccupied ? 'opacity-0 scale-90 pointer-events-none' : 'opacity-100 scale-100'
+                    }`}
                 >
                     <button
                         type="button"
                         onClick={toggleVideo}
                         aria-label={isPlaying ? 'Pause reel' : 'Play reel'}
-                        className="w-12 h-12 md:w-20 md:h-20 rounded-full border border-white/30 bg-black/20 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-[#ff2a2a] hover:shadow-[0_0_30px_rgba(255,42,42,0.6)]"
+                        className="w-12 h-12 md:w-20 md:h-20 rounded-full border border-white/30 bg-black/20 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-[#ff2a2a] hover:shadow-[0_0_30px_rgba(255,42,42,0.6)] cursor-pointer group"
                     >
                         {isPlaying ? (
                             /* Pause icon */
@@ -193,12 +284,12 @@ export default function Hero() {
                             </svg>
                         ) : (
                             /* Play triangle */
-                            <svg className="w-5 h-5 md:w-7 md:h-7 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 md:w-7 md:h-7 text-white ml-1 transition-transform duration-200 group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 5v14l11-7z" />
                             </svg>
                         )}
                     </button>
-                    <span className="text-white text-[10px] uppercase tracking-widest">
+                    <span className="text-white text-[10px] uppercase tracking-widest font-semibold select-none">
                         {isPlaying ? 'Pause' : 'Play Reel'}
                     </span>
                 </div>

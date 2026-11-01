@@ -31,14 +31,14 @@ export default function SoftSkills() {
         <section
             className="bg-white pt-24 pb-32 px-6 md:px-12 relative overflow-hidden bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:60px_60px]"
         >
-            {/* Torn-paper divider at top (dark → white) */}
+            {/* Torn-paper divider at top (red → white) */}
             <svg
                 className="absolute top-0 left-0 w-full h-12 md:h-20 rotate-180 -translate-y-[1px] pointer-events-none"
                 viewBox="0 0 1200 120"
                 preserveAspectRatio="none"
                 aria-hidden="true"
             >
-                <path d={TORN_PATH} fill="#0a0a0a" />
+                <path d={TORN_PATH} fill="#ff2a2a" />
             </svg>
 
             <div className="max-w-6xl mx-auto relative z-10">
