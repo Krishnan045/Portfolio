@@ -2,7 +2,7 @@
 
 > Java Full Stack Developer | React · Java · MySQL · Git
 
-**Live site:** https://YOUR-SITE-URL/ *(replace after deployment)*
+**Live site:** https://portfolio-57ja.vercel.app/
 
 ---
 

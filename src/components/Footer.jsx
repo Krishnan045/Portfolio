@@ -1,5 +1,5 @@
 // Footer.jsx — Full-bleed footer with huge brand name and social links
-import { personalInfo, socialLinks, footerContent, academy } from '../data/portfolioData';
+import { personalInfo, socialLinks, footerContent } from '../data/portfolioData';
 
 // Computed once at module load — not inside render
 const currentYear = new Date().getFullYear();
@@ -64,23 +64,12 @@ export default function Footer() {
             {/* ── Bottom row ── */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:items-end pt-8 border-t border-white/10">
 
-                {/* Col 1 — Contact link + copyright + TAP Academy credit */}
+                {/* Col 1 — Contact link + copyright */}
                 <div className="flex flex-col gap-1">
                     <a href="#contact" className="underline hover:text-white transition-colors duration-200 uppercase">
                         Contact
                     </a>
                     <p className="text-white/60 mt-1">{footerContent.copyright}</p>
-                    <p className="text-white/40 mt-1">
-                        Trained at{' '}
-                        <a
-                            href={academy.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline hover:text-white transition-colors duration-200"
-                        >
-                            {academy.name}
-                        </a>
-                    </p>
                 </div>
 
                 {/* Col 2 — Email + social icons */}

@@ -2,17 +2,30 @@
 import { useRef, useState } from 'react';
 import { videoIntro } from '../data/portfolioData';
 import heroVideo from '../assets/hero/hero.mp4';
+import introThumbnail from '../assets/hero/intro-thumbnail.png';
 
 const TORN_PATH = 'M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.62,189.5,99.8,242.79,81.82,282.88,63.6,321.39,56.44Z';
 
 export default function VideoIntro() {
     const videoRef = useRef(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
+    const [, setIsPlaying] = useState(false);
 
     const handlePlayClick = () => {
+        setHasStarted(true);
+        setIsPlaying(true);
         if (videoRef.current) {
-            videoRef.current.play();
-            setIsPlaying(true);
+            videoRef.current.play().catch((err) => {
+                console.warn('Playback error:', err);
+            });
+        }
+    };
+
+    const handleEnded = () => {
+        setHasStarted(false);
+        setIsPlaying(false);
+        if (videoRef.current) {
+            videoRef.current.currentTime = 0;
         }
     };
 
@@ -43,29 +56,35 @@ export default function VideoIntro() {
                         <video
                             ref={videoRef}
                             src={heroVideo}
-                            controls
+                            poster={introThumbnail}
+                            controls={hasStarted}
                             playsInline
                             preload="metadata"
                             className="w-full h-full object-cover rounded-2xl"
                             onPlay={() => setIsPlaying(true)}
                             onPause={() => setIsPlaying(false)}
-                            onEnded={() => setIsPlaying(false)}
+                            onEnded={handleEnded}
                         />
 
-                        {/* Center Custom Play Button Overlay when paused */}
-                        {!isPlaying && (
-                            <button
-                                type="button"
+                        {/* Thumbnail Image + Custom Play Button Overlay before video starts or after it finishes */}
+                        {!hasStarted && (
+                            <div
                                 onClick={handlePlayClick}
-                                aria-label="Play Introduction Video"
-                                className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/25 transition-all duration-300 group/btn cursor-pointer"
+                                className="absolute inset-0 cursor-pointer group/thumb flex items-center justify-center"
                             >
-                                <div className="w-20 h-20 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_35px_rgba(255,42,42,0.7)] group-hover/btn:scale-110 transition-transform duration-300">
+                                <img
+                                    src={introThumbnail}
+                                    alt="Self Introduction Video Thumbnail"
+                                    className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover/thumb:scale-[1.02]"
+                                />
+                                <div className="absolute inset-0 bg-black/15 group-hover/thumb:bg-black/25 transition-colors duration-300 rounded-2xl" />
+
+                                <div className="absolute z-10 w-20 h-20 rounded-full bg-[#ff2a2a] text-white flex items-center justify-center shadow-[0_0_35px_rgba(255,42,42,0.7)] group-hover/thumb:scale-115 transition-transform duration-300">
                                     <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M8 5v14l11-7z" />
                                     </svg>
                                 </div>
-                            </button>
+                            </div>
                         )}
                     </div>
                 </div>
